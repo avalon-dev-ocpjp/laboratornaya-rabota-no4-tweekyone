@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.IntSummaryStatistics;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -19,14 +20,19 @@ final class FileReaderImpl implements FileReader {
     private final int averageLineSize;
 
     FileReaderImpl(File file) throws IOException {
+        linesCount = Files.readAllLines(file.toPath()).size();
         stream = new RandomAccessFile(file, "r");
-        IntSummaryStatistics statistics = Stream
+//        IntSummaryStatistics statistics = Stream
+        averageLineSize = (int)Stream
                 .generate(this::readLine)
-                .takeWhile(Objects::nonNull)
-                .mapToInt(String::length)
-                .summaryStatistics();
-        linesCount = (int) statistics.getCount();
-        averageLineSize = (int) statistics.getAverage();
+                //.takeWhile(Objects::nonNull)  // because java 8
+                .filter(Objects::nonNull)
+                .limit(linesCount)
+                .mapToDouble(String::length)
+                .average()
+                .getAsDouble();
+//                .mapToInt(String::length)
+//                .summaryStatistics();
     }
 
     @Override
