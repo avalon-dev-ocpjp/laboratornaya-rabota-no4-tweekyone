@@ -149,7 +149,7 @@ public interface Commodity {
      */
     static Commodity valueOf(String string) {
         /*
-         * TODO(Студент): реализовать метод 'parse()' класса 'Commodity'
+         * TODO(Студент): реализовать метод 'valueOf()' класса 'Commodity'
          * Реализация метода должна быть основана на формате
          * файла 'resources/household.csv'.
          */
