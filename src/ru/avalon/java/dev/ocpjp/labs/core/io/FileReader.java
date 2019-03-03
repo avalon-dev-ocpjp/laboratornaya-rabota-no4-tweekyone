@@ -37,3 +37,4 @@ public interface FileReader extends Closeable {
         return new FileReaderImpl(file);
     }
 }
+

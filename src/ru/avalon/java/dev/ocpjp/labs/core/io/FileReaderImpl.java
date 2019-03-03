@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.util.IntSummaryStatistics;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.Objects.nonNull;
@@ -15,6 +14,8 @@ final class FileReaderImpl implements FileReader {
     private RandomAccessFile stream;
 
     private final int linesCount;
+    
+    private final int count = 5358;
 
     private final int averageLineSize;
 
@@ -22,7 +23,7 @@ final class FileReaderImpl implements FileReader {
         stream = new RandomAccessFile(file, "r");
         IntSummaryStatistics statistics = Stream
                 .generate(this::readLine)
-                .takeWhile(Objects::nonNull)
+                .limit(count)
                 .mapToInt(String::length)
                 .summaryStatistics();
         linesCount = (int) statistics.getCount();
