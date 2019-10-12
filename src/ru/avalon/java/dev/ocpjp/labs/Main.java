@@ -1,16 +1,18 @@
 package ru.avalon.java.dev.ocpjp.labs;
 
 import ru.avalon.java.dev.ocpjp.labs.models.Commodity;
-
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         final Collection<Commodity> commodities = Commodity.random(100);
 
         /*
@@ -88,8 +90,43 @@ public class Main {
                                             .mapToDouble(x -> x.getPrice())
                                             .average();
         
-        System.out.println("Average price of goods is " + (float) average.getAsDouble());
+        System.out.printf("Average price of goods is %.2f", average.getAsDouble());
         
         System.out.println();
+        
+        //Мода (медиана) стоимости товара
+        List<Double> list = commodities.stream()
+                                       .map(Commodity::getPrice)
+                                       .collect(Collectors.toList());
+        
+        Double median = list.size() % 2 == 0 ? EventSetMedian.call(list) : OddSetMedian.call(list);
+        System.out.println("Median = " + median);
+    }
+    
+    
+    private static class EventSetMedian{
+
+        public static Double call(List<Double> list) throws Exception {
+            return Arrays.stream(list.toArray())
+                        .mapToDouble(x -> (double)x)
+                        .sorted()
+                        .skip(list.size() / 2 - 1)
+                        .limit(2)
+                        .average()
+                        .orElseThrow(IllegalStateException::new);
+        }
+        
+    }
+    
+    private static class OddSetMedian{
+
+        public static Double call(List<Double> list) throws Exception {
+            return Arrays.stream(list.toArray())
+                        .mapToDouble(x -> (double)x)
+                        .sorted()
+                        .skip(list.size() / 2)
+                        .findFirst()
+                        .orElseThrow(IllegalStateException::new);
+        }
     }
 }
