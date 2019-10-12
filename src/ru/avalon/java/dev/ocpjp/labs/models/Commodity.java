@@ -5,6 +5,8 @@ import ru.avalon.java.dev.ocpjp.labs.core.io.RandomFileReader;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Абстрактное представление о товаре.
@@ -117,7 +119,7 @@ public interface Commodity {
          * Созданные реализации случше всего инкапсулировать
          * на уровне пакета.
          */
-        throw new UnsupportedOperationException("Not implemented yet!");
+        return new CommodityImpl.CommodityBuilderImpl();
     }
 
     /**
@@ -136,7 +138,10 @@ public interface Commodity {
              * 1. Для создания коллекции следует использовать метод 'generate()' класса 'Stream'
              * 2. Для получения коллекции следует использовать метод 'collect()' класса 'Stream'
              */
-            throw new UnsupportedOperationException("Not implemented yet!");
+            return Stream.generate(reader::readLine)
+                        .limit(limit)
+                        .map(Commodity::valueOf)
+                        .collect(Collectors.toList());
         }
     }
 
@@ -153,6 +158,15 @@ public interface Commodity {
          * Реализация метода должна быть основана на формате
          * файла 'resources/household.csv'.
          */
-        throw new UnsupportedOperationException("Not implemented yet!");
+        if (string != null){
+            String[] values = string.split(";");
+            return builder().code(values[0])
+                            .vendorCode(values[1])
+                            .name(values[2])
+                            .residue(Integer.valueOf(values[3]))
+                            .price(Double.valueOf(values[4]))
+                            .build();
+        }
+        return null;
     }
 }
